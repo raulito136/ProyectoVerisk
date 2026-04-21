@@ -1,1 +1,6 @@
-<Solution />
+<Solution>
+  <Project Path="ReferenceData.Api/ReferenceData.Api.csproj" />
+  <Project Path="ReferenceData.Application/ReferenceData.Application.csproj" />
+  <Project Path="ReferenceData.Domain/ReferenceData.Domain.csproj" />
+  <Project Path="ReferenceData.Infrastructure/ReferenceData.Infrastructure.csproj" />
+</Solution>
