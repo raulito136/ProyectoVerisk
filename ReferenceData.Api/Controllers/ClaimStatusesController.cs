@@ -8,7 +8,7 @@ using ReferenceData.Application.Common;
 namespace ReferenceData.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/claim-statuses")]
+    [Route("api/v{version:apiVersion}/claim-statuses")]
     public class ClaimStatusesController(ClaimStatusService service) : ControllerBase
     {
         [HttpGet]

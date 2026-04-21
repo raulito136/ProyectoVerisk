@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Microsoft.EntityFrameworkCore;
 using ReferenceData.Infrastructure;
 using ReferenceData.Infrastructure.Persistence;
@@ -9,6 +10,14 @@ namespace ReferenceData.Api
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddApiVersioning(options =>
+            {
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ReportApiVersions = true;
+                options.ApiVersionReader = new UrlSegmentApiVersionReader();
+            }).AddMvc();
 
             builder.Services.AddControllers();
             builder.Services.AddInfrastructure(builder.Configuration);

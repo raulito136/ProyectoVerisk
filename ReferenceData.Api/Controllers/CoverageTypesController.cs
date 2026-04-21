@@ -8,7 +8,7 @@ using ReferenceData.Application.Common;
 namespace ReferenceData.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/coverage-types")]
+    [Route("api/v{version:apiVersion}/coverage-types")]
     public class CoverageTypesController(CoverageTypeService service) : ControllerBase
     {
         [HttpGet]

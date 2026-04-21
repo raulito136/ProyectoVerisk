@@ -8,7 +8,7 @@ using ReferenceData.Application.Common;
 namespace ReferenceData.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/regions")]
+    [Route("api/v{version:apiVersion}/regions")]
     public class RegionsController(RegionService service) : ControllerBase
     {
         [HttpGet]

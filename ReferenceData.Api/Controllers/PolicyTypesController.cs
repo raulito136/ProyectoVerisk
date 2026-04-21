@@ -9,7 +9,7 @@ using ReferenceData.Application.Common;
 namespace ReferenceData.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/policy-types")]
+    [Route("api/v{version:apiVersion}/policy-types")]
     public class PolicyTypesController(PolicyTypeService service) : ControllerBase
     {
         [HttpGet]
