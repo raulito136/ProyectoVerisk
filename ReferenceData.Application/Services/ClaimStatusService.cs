@@ -10,8 +10,19 @@ using System.Threading.Tasks;
 
 namespace ReferenceData.Application.Services
 {
+    /// <summary>
+    /// Service for handling business logic related to claim statuses.
+    /// </summary>
     public class ClaimStatusService(IClaimStatusRepository repo)
     {
+        /// <summary>
+        /// Retrieves a paged collection of claim statuses.
+        /// </summary>
+        /// <param name="includeInactive">If true, includes statuses marked as inactive.</param>
+        /// <param name="page">Current page number.</param>
+        /// <param name="pageSize">Number of records per page.</param>
+        /// <param name="ct">Cancellation token.</param>
+        /// <returns>A paged response containing the list of <see cref="ClaimStatusDto"/>.</returns>
         public async Task<PagedResponse<ClaimStatusDto>> GetAllAsync(bool includeInactive, int page, int pageSize, CancellationToken ct)
         {
             bool? isActiveFilter = includeInactive ? null : true;
@@ -26,6 +37,9 @@ namespace ReferenceData.Application.Services
             return new PagedResponse<ClaimStatusDto> { Data = items, Page = page, PageSize = pageSize, Total = total };
         }
 
+        /// <summary>
+        /// Gets a specific claim status by its ID.
+        /// </summary>
         public async Task<ServiceResult<ClaimStatusDto>> GetByIdAsync(int id, CancellationToken ct)
         {
             var entity = await repo.GetByIdAsync(id, ct);
@@ -34,6 +48,9 @@ namespace ReferenceData.Application.Services
                 : ServiceResult<ClaimStatusDto>.Ok(ToDto(entity));
         }
 
+        /// <summary>
+        /// Gets a specific claim status by its unique business code.
+        /// </summary>
         public async Task<ServiceResult<ClaimStatusDto>> GetByCodeAsync(string code, CancellationToken ct)
         {
             var entity = await repo.GetByCodeAsync(code.ToUpper(), ct);
@@ -42,6 +59,9 @@ namespace ReferenceData.Application.Services
                 : ServiceResult<ClaimStatusDto>.Ok(ToDto(entity));
         }
 
+        /// <summary>
+        /// Creates a new claim status after validating that the code is unique.
+        /// </summary>
         public async Task<ServiceResult<ClaimStatusDto>> CreateAsync(CreateClaimStatusRequest request, CancellationToken ct)
         {
             var code = request.Code.Trim().ToUpper();
@@ -59,6 +79,9 @@ namespace ReferenceData.Application.Services
             return ServiceResult<ClaimStatusDto>.Ok(ToDto(await repo.CreateAsync(entity, ct)));
         }
 
+        /// <summary>
+        /// Updates the properties of an existing claim status.
+        /// </summary>
         public async Task<ServiceResult<ClaimStatusDto>> UpdateAsync(int id, UpdateClaimStatusRequest request, CancellationToken ct)
         {
             var entity = await repo.GetByIdAsync(id, ct);
@@ -71,6 +94,9 @@ namespace ReferenceData.Application.Services
             return ServiceResult<ClaimStatusDto>.Ok(ToDto(await repo.UpdateAsync(entity, ct)));
         }
 
+        /// <summary>
+        /// Performs a soft delete by setting the status to inactive.
+        /// </summary>
         public async Task<ServiceResult<bool>> DeleteAsync(int id, CancellationToken ct)
         {
             var entity = await repo.GetByIdAsync(id, ct);
@@ -81,6 +107,9 @@ namespace ReferenceData.Application.Services
             return ServiceResult<bool>.Ok(true);
         }
 
+        /// <summary>
+        /// Maps a domain entity to its corresponding Data Transfer Object.
+        /// </summary>
         private static ClaimStatusDto ToDto(ClaimStatus e) => new ClaimStatusDto
         {
             Id = e.Id,

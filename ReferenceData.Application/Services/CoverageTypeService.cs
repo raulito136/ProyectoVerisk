@@ -10,8 +10,14 @@ using System.Threading.Tasks;
 
 namespace ReferenceData.Application.Services
 {
+    /// <summary>
+    /// Service responsible for managing coverage type business operations.
+    /// </summary>
     public class CoverageTypeService(ICoverageTypeRepository repo)
     {
+        /// <summary>
+        /// Retrieves paged records of coverage types.
+        /// </summary>
         public async Task<PagedResponse<CoverageTypeDto>> GetAllAsync(bool includeInactive, int page, int pageSize, CancellationToken ct)
         {
             bool? isActiveFilter = includeInactive ? null : true;
@@ -26,6 +32,9 @@ namespace ReferenceData.Application.Services
             return new PagedResponse<CoverageTypeDto> { Data = items, Page = page, PageSize = pageSize, Total = total };
         }
 
+        /// <summary>
+        /// Retrieves a coverage type by its internal ID.
+        /// </summary>
         public async Task<ServiceResult<CoverageTypeDto>> GetByIdAsync(int id, CancellationToken ct)
         {
             var entity = await repo.GetByIdAsync(id, ct);
@@ -34,6 +43,9 @@ namespace ReferenceData.Application.Services
                 : ServiceResult<CoverageTypeDto>.Ok(ToDto(entity));
         }
 
+        /// <summary>
+        /// Finds a coverage type by its business code.
+        /// </summary>
         public async Task<ServiceResult<CoverageTypeDto>> GetByCodeAsync(string code, CancellationToken ct)
         {
             var entity = await repo.GetByCodeAsync(code.ToUpper(), ct);
@@ -42,17 +54,23 @@ namespace ReferenceData.Application.Services
                 : ServiceResult<CoverageTypeDto>.Ok(ToDto(entity));
         }
 
+        /// <summary>
+        /// Creates a new coverage type ensuring no duplicate codes exist.
+        /// </summary>
         public async Task<ServiceResult<CoverageTypeDto>> CreateAsync(CreateCoverageTypeRequest request, CancellationToken ct)
         {
             var code = request.Code.Trim().ToUpper();
             if (await repo.ExistsAsync(code, ct))
                 return ServiceResult<CoverageTypeDto>.Fail("Code", $"Code '{code}' already exists");
 
-            var entity = new CoverageType { Code = code, Name = request.Name.Trim(), Description = request.Description ?? string.Empty, IsActive = true};
+            var entity = new CoverageType { Code = code, Name = request.Name.Trim(), Description = request.Description ?? string.Empty, IsActive = true };
             var created = await repo.CreateAsync(entity, ct);
             return ServiceResult<CoverageTypeDto>.Ok(ToDto(created));
         }
 
+        /// <summary>
+        /// Updates the name, description, and status of a coverage type.
+        /// </summary>
         public async Task<ServiceResult<CoverageTypeDto>> UpdateAsync(int id, UpdateCoverageTypeRequest request, CancellationToken ct)
         {
             var entity = await repo.GetByIdAsync(id, ct);
@@ -66,12 +84,15 @@ namespace ReferenceData.Application.Services
             return ServiceResult<CoverageTypeDto>.Ok(ToDto(await repo.UpdateAsync(entity, ct)));
         }
 
+        /// <summary>
+        /// Deactivates a coverage type record (Soft Delete).
+        /// </summary>
         public async Task<ServiceResult<bool>> DeleteAsync(int id, CancellationToken ct)
         {
             var entity = await repo.GetByIdAsync(id, ct);
             if (entity is null) return ServiceResult<bool>.Fail("Id", "No encontrado");
 
-            entity.IsActive = false; // Soft Delete
+            entity.IsActive = false;
             await repo.UpdateAsync(entity, ct);
             return ServiceResult<bool>.Ok(true);
         }

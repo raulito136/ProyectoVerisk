@@ -10,8 +10,14 @@ using System.Threading.Tasks;
 
 namespace ReferenceData.Application.Services
 {
+    /// <summary>
+    /// Service for managing geographic regions and their availability.
+    /// </summary>
     public class RegionService(IRegionRepository repo)
     {
+        /// <summary>
+        /// Gets all regions in a paginated format.
+        /// </summary>
         public async Task<PagedResponse<RegionDto>> GetAllAsync(bool includeInactive, int page, int pageSize, CancellationToken ct)
         {
             bool? isActiveFilter = includeInactive ? null : true;
@@ -33,6 +39,9 @@ namespace ReferenceData.Application.Services
             };
         }
 
+        /// <summary>
+        /// Retrieves a region by ID.
+        /// </summary>
         public async Task<ServiceResult<RegionDto>> GetByIdAsync(int id, CancellationToken ct)
         {
             var entity = await repo.GetByIdAsync(id, ct);
@@ -41,6 +50,9 @@ namespace ReferenceData.Application.Services
                 : ServiceResult<RegionDto>.Ok(ToDto(entity));
         }
 
+        /// <summary>
+        /// Retrieves a region by its unique code.
+        /// </summary>
         public async Task<ServiceResult<RegionDto>> GetByCodeAsync(string code, CancellationToken ct)
         {
             var entity = await repo.GetByCodeAsync(code.ToUpper(), ct);
@@ -49,6 +61,9 @@ namespace ReferenceData.Application.Services
                 : ServiceResult<RegionDto>.Ok(ToDto(entity));
         }
 
+        /// <summary>
+        /// Creates a new region after checking that the code is not already registered.
+        /// </summary>
         public async Task<ServiceResult<RegionDto>> CreateAsync(CreateRegionRequest request, CancellationToken ct)
         {
             var code = request.Code.Trim().ToUpper();
@@ -59,6 +74,9 @@ namespace ReferenceData.Application.Services
             return ServiceResult<RegionDto>.Ok(ToDto(await repo.CreateAsync(entity, ct)));
         }
 
+        /// <summary>
+        /// Updates the region's information.
+        /// </summary>
         public async Task<ServiceResult<RegionDto>> UpdateAsync(int id, UpdateRegionRequest request, CancellationToken ct)
         {
             var entity = await repo.GetByIdAsync(id, ct);
@@ -71,6 +89,9 @@ namespace ReferenceData.Application.Services
             return ServiceResult<RegionDto>.Ok(ToDto(await repo.UpdateAsync(entity, ct)));
         }
 
+        /// <summary>
+        /// Marks a region as inactive (Soft Delete).
+        /// </summary>
         public async Task<ServiceResult<bool>> DeleteAsync(int id, CancellationToken ct)
         {
             var entity = await repo.GetByIdAsync(id, ct);

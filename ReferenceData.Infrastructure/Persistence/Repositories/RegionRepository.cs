@@ -9,22 +9,41 @@ using System.Threading.Tasks;
 
 namespace ReferenceData.Infrastructure.Persistence.Repositories
 {
+    /// <summary>
+    /// Data access implementation for Regions using Entity Framework Core.
+    /// </summary>
     public class RegionRepository(ReferenceDataDbContext db) : IRegionRepository
     {
+        /// <summary>
+        /// Retrieves the list of regions, ordered by code.
+        /// </summary>
         public async Task<List<Region>> GetAllAsync(bool? isActive, CancellationToken ct) =>
-            await db.Regions    
+            await db.Regions
                 .Where(x => !isActive.HasValue || x.IsActive == isActive)
                 .OrderBy(x => x.Code)
                 .ToListAsync(ct);
 
+        /// <summary>
+        /// Finds a region by ID.
+        /// </summary>
         public async Task<Region?> GetByIdAsync(int id, CancellationToken ct) =>
             await db.Regions.FindAsync([id], ct);
 
+        /// <summary>
+        /// Finds a region by its unique code.
+        /// </summary>
         public async Task<Region?> GetByCodeAsync(string code, CancellationToken ct) =>
             await db.Regions.FirstOrDefaultAsync(x => x.Code == code, ct);
+
+        /// <summary>
+        /// Checks if a region code exists in the database.
+        /// </summary>
         public async Task<bool> ExistsAsync(string code, CancellationToken ct) =>
             await db.Regions.AnyAsync(x => x.Code == code, ct);
 
+        /// <summary>
+        /// Creates a new region record.
+        /// </summary>
         public async Task<Region> CreateAsync(Region entity, CancellationToken ct)
         {
             db.Regions.Add(entity);
@@ -32,6 +51,9 @@ namespace ReferenceData.Infrastructure.Persistence.Repositories
             return entity;
         }
 
+        /// <summary>
+        /// Updates a region's data.
+        /// </summary>
         public async Task<Region> UpdateAsync(Region entity, CancellationToken ct)
         {
             db.Regions.Update(entity);
@@ -39,6 +61,9 @@ namespace ReferenceData.Infrastructure.Persistence.Repositories
             return entity;
         }
 
+        /// <summary>
+        /// Deletes a region record.
+        /// </summary>
         public async Task DeleteAsync(Region entity, CancellationToken ct)
         {
             db.Regions.Remove(entity);

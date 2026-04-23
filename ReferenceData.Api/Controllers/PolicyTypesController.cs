@@ -8,21 +8,30 @@ using ReferenceData.Application.Common;
 
 namespace ReferenceData.Api.Controllers
 {
+    /// <summary>
+    /// Handles requests related to insurance policy types.
+    /// </summary>
     [ApiController]
     [Route("api/v{version:apiVersion}/policy-types")]
     public class PolicyTypesController(PolicyTypeService service) : ControllerBase
     {
+        /// <summary>
+        /// Fetches a list of all available policy types.
+        /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAll(
-    [FromQuery] bool includeInactive = false,
-    [FromQuery] int page = 1,
-    [FromQuery] int pageSize = 20,
-    CancellationToken ct = default)
+            [FromQuery] bool includeInactive = false,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 20,
+            CancellationToken ct = default)
         {
             var result = await service.GetAllAsync(includeInactive, page, pageSize, ct);
             return Ok(result);
         }
 
+        /// <summary>
+        /// Finds a policy type using its internal ID.
+        /// </summary>
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id, CancellationToken ct)
         {
@@ -32,6 +41,9 @@ namespace ReferenceData.Api.Controllers
             return Ok(ApiResponse<PolicyTypeDto>.Success(result.Value!));
         }
 
+        /// <summary>
+        /// Finds a policy type using its unique business code.
+        /// </summary>
         [HttpGet("by-code/{code}")]
         public async Task<IActionResult> GetByCode(string code, CancellationToken ct)
         {
@@ -41,6 +53,9 @@ namespace ReferenceData.Api.Controllers
             return Ok(ApiResponse<PolicyTypeDto>.Success(result.Value!));
         }
 
+        /// <summary>
+        /// Adds a new policy type to the database.
+        /// </summary>
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreatePolicyTypeRequest request, CancellationToken ct)
         {
@@ -51,6 +66,9 @@ namespace ReferenceData.Api.Controllers
                 ApiResponse<PolicyTypeDto>.Success(result.Value));
         }
 
+        /// <summary>
+        /// Modifies an existing policy type.
+        /// </summary>
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdatePolicyTypeRequest request, CancellationToken ct)
         {
@@ -60,6 +78,9 @@ namespace ReferenceData.Api.Controllers
             return Ok(ApiResponse<PolicyTypeDto>.Success(result.Value!));
         }
 
+        /// <summary>
+        /// Deletes a policy type based on the provided ID.
+        /// </summary>
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id, CancellationToken ct)
         {

@@ -9,22 +9,42 @@ using System.Threading.Tasks;
 
 namespace ReferenceData.Infrastructure.Persistence.Repositories
 {
+    /// <summary>
+    /// Entity Framework implementation of the <see cref="IClaimStatusRepository"/>.
+    /// </summary>
+    /// <param name="db">The database context.</param>
     public class ClaimStatusRepository(ReferenceDataDbContext db) : IClaimStatusRepository
     {
+        /// <summary>
+        /// Retrieves claim statuses from the database with an optional activity filter.
+        /// </summary>
         public async Task<List<ClaimStatus>> GetAllAsync(bool? isActive, CancellationToken ct) =>
-            await db.ClaimStatuses  
+            await db.ClaimStatuses
                 .Where(x => !isActive.HasValue || x.IsActive == isActive)
                 .OrderBy(x => x.Code)
                 .ToListAsync(ct);
 
+        /// <summary>
+        /// Finds a specific claim status by its primary key.
+        /// </summary>
         public async Task<ClaimStatus?> GetByIdAsync(int id, CancellationToken ct) =>
             await db.ClaimStatuses.FindAsync([id], ct);
 
+        /// <summary>
+        /// Retrieves a claim status by its unique business code.
+        /// </summary>
         public async Task<ClaimStatus?> GetByCodeAsync(string code, CancellationToken ct) =>
             await db.ClaimStatuses.FirstOrDefaultAsync(x => x.Code == code, ct);
+
+        /// <summary>
+        /// Checks if any claim status exists with the given code.
+        /// </summary>
         public async Task<bool> ExistsAsync(string code, CancellationToken ct) =>
             await db.ClaimStatuses.AnyAsync(x => x.Code == code, ct);
 
+        /// <summary>
+        /// Adds a new claim status to the context and saves changes.
+        /// </summary>
         public async Task<ClaimStatus> CreateAsync(ClaimStatus entity, CancellationToken ct)
         {
             db.ClaimStatuses.Add(entity);
@@ -32,6 +52,9 @@ namespace ReferenceData.Infrastructure.Persistence.Repositories
             return entity;
         }
 
+        /// <summary>
+        /// Marks the entity as modified and persists changes.
+        /// </summary>
         public async Task<ClaimStatus> UpdateAsync(ClaimStatus entity, CancellationToken ct)
         {
             db.ClaimStatuses.Update(entity);
@@ -39,6 +62,9 @@ namespace ReferenceData.Infrastructure.Persistence.Repositories
             return entity;
         }
 
+        /// <summary>
+        /// Removes the entity from the database.
+        /// </summary>
         public async Task DeleteAsync(ClaimStatus entity, CancellationToken ct)
         {
             db.ClaimStatuses.Remove(entity);

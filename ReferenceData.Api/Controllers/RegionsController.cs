@@ -7,22 +7,30 @@ using ReferenceData.Application.Common;
 
 namespace ReferenceData.Api.Controllers
 {
+    /// <summary>
+    /// API Controller for managing geographic regions.
+    /// </summary>
     [ApiController]
     [Route("api/v{version:apiVersion}/regions")]
     public class RegionsController(RegionService service) : ControllerBase
     {
-        [HttpGet]
+        /// <summary>
+        /// Lists all regions with pagination support.
+        /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAll(
-    [FromQuery] bool includeInactive = false,
-    [FromQuery] int page = 1,
-    [FromQuery] int pageSize = 20,
-    CancellationToken ct = default)
+            [FromQuery] bool includeInactive = false,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 20,
+            CancellationToken ct = default)
         {
             var result = await service.GetAllAsync(includeInactive, page, pageSize, ct);
             return Ok(result);
         }
 
+        /// <summary>
+        /// Gets a region by its unique ID.
+        /// </summary>
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id, CancellationToken ct)
         {
@@ -32,6 +40,9 @@ namespace ReferenceData.Api.Controllers
             return Ok(ApiResponse<RegionDto>.Success(result.Value!));
         }
 
+        /// <summary>
+        /// Creates a new region entry.
+        /// </summary>
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateRegionRequest request, CancellationToken ct)
         {
@@ -42,6 +53,9 @@ namespace ReferenceData.Api.Controllers
                 ApiResponse<RegionDto>.Success(result.Value));
         }
 
+        /// <summary>
+        /// Updates the information of an existing region.
+        /// </summary>
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateRegionRequest request, CancellationToken ct)
         {
@@ -51,6 +65,9 @@ namespace ReferenceData.Api.Controllers
             return Ok(ApiResponse<RegionDto>.Success(result.Value!));
         }
 
+        /// <summary>
+        /// Permanently deletes a region record.
+        /// </summary>
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id, CancellationToken ct)
         {

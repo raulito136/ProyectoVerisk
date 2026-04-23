@@ -6,8 +6,14 @@ using System.Xml.Linq;
 
 namespace ReferenceData.Application.Services;
 
+/// <summary>
+/// Service to manage insurance policy types and associated business rules.
+/// </summary>
 public class PolicyTypeService(IPolicyTypeRepository repo)
 {
+    /// <summary>
+    /// Fetches a paged list of policy types.
+    /// </summary>
     public async Task<PagedResponse<PolicyTypeDto>> GetAllAsync(bool includeInactive, int page, int pageSize, CancellationToken ct)
     {
         bool? isActiveFilter = includeInactive ? null : true;
@@ -29,6 +35,9 @@ public class PolicyTypeService(IPolicyTypeRepository repo)
         };
     }
 
+    /// <summary>
+    /// Gets a policy type by its ID.
+    /// </summary>
     public async Task<ServiceResult<PolicyTypeDto>> GetByIdAsync(int id, CancellationToken ct)
     {
         var entity = await repo.GetByIdAsync(id, ct);
@@ -37,6 +46,9 @@ public class PolicyTypeService(IPolicyTypeRepository repo)
             : ServiceResult<PolicyTypeDto>.Ok(ToDto(entity));
     }
 
+    /// <summary>
+    /// Gets a policy type by its unique business code.
+    /// </summary>
     public async Task<ServiceResult<PolicyTypeDto>> GetByCodeAsync(string code, CancellationToken ct)
     {
         var entity = await repo.GetByCodeAsync(code.ToUpper(), ct);
@@ -45,6 +57,9 @@ public class PolicyTypeService(IPolicyTypeRepository repo)
             : ServiceResult<PolicyTypeDto>.Ok(ToDto(entity));
     }
 
+    /// <summary>
+    /// Creates a new policy type with basic validation for the code field.
+    /// </summary>
     public async Task<ServiceResult<PolicyTypeDto>> CreateAsync(CreatePolicyTypeRequest request, CancellationToken ct)
     {
         var code = request.Code.Trim().ToUpper();
@@ -60,12 +75,16 @@ public class PolicyTypeService(IPolicyTypeRepository repo)
             Code = code,
             Name = request.Name.Trim(),
             Description = request.Description ?? string.Empty,
-            IsActive = true        };
+            IsActive = true
+        };
 
         var created = await repo.CreateAsync(entity, ct);
         return ServiceResult<PolicyTypeDto>.Ok(ToDto(created));
     }
 
+    /// <summary>
+    /// Updates the details of a policy type.
+    /// </summary>
     public async Task<ServiceResult<PolicyTypeDto>> UpdateAsync(int id, UpdatePolicyTypeRequest request, CancellationToken ct)
     {
         var entity = await repo.GetByIdAsync(id, ct);
@@ -76,23 +95,25 @@ public class PolicyTypeService(IPolicyTypeRepository repo)
         entity.IsActive = request.IsActive;
         entity.Description = request.Description ?? string.Empty;
 
-
         var updated = await repo.UpdateAsync(entity, ct);
         return ServiceResult<PolicyTypeDto>.Ok(ToDto(updated));
     }
 
+    /// <summary>
+    /// Soft deletes a policy type.
+    /// </summary>
     public async Task<ServiceResult<bool>> DeleteAsync(int id, CancellationToken ct)
     {
         var entity = await repo.GetByIdAsync(id, ct);
         if (entity is null)
             return ServiceResult<bool>.Fail("Id", $"PolicyType with id {id} not found");
 
-        entity.IsActive = false; // Soft Delete
+        entity.IsActive = false;
         await repo.UpdateAsync(entity, ct);
         return ServiceResult<bool>.Ok(true);
     }
 
-    private static PolicyTypeDto ToDto(PolicyType e)=> new PolicyTypeDto
+    private static PolicyTypeDto ToDto(PolicyType e) => new PolicyTypeDto
     {
         Id = e.Id,
         Code = e.Code,
@@ -100,5 +121,4 @@ public class PolicyTypeService(IPolicyTypeRepository repo)
         Description = e.Description,
         IsActive = e.IsActive
     };
-
 }
