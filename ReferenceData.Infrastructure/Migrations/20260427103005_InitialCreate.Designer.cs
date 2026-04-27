@@ -11,8 +11,8 @@ using ReferenceData.Infrastructure.Persistence;
 namespace ReferenceData.Infrastructure.Migrations
 {
     [DbContext(typeof(ReferenceDataDbContext))]
-    [Migration("20260420100756_AddAuditFieldsToEntities")]
-    partial class AddAuditFieldsToEntities
+    [Migration("20260427103005_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

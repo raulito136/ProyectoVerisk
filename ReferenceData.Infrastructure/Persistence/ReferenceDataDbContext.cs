@@ -14,6 +14,10 @@ namespace ReferenceData.Infrastructure.Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ClaimStatus>().HasQueryFilter(x => x.IsActive);
+            modelBuilder.Entity<CoverageType>().HasQueryFilter(x => x.IsActive);
+            modelBuilder.Entity<PolicyType>().HasQueryFilter(x => x.IsActive);
+            modelBuilder.Entity<Region>().HasQueryFilter(x => x.IsActive);
             modelBuilder.ApplyConfiguration(new PolicyTypeConfiguration());
             modelBuilder.ApplyConfiguration(new CoverageTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ClaimStatusConfiguration());

@@ -11,6 +11,22 @@ namespace ReferenceData.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowMFE", policy =>
+                {
+                    // Damos permiso a todos los puertos de los microfrontends y el shell
+                    policy.WithOrigins(
+                            "http://localhost:4200",
+                            "http://localhost:4201",
+                            "http://localhost:4202",
+                            "http://localhost:4203"
+                        )
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
+
             builder.Services.AddApiVersioning(options =>
             {
                 options.DefaultApiVersion = new ApiVersion(1, 0);
@@ -25,6 +41,7 @@ namespace ReferenceData.Api
             var app = builder.Build();
 
             app.MapControllers();
+            app.UseCors("AllowMFE");
 
             using (var scope = app.Services.CreateScope())
             {
@@ -37,3 +54,4 @@ namespace ReferenceData.Api
         }
     }
 }
+public partial class Program { }
