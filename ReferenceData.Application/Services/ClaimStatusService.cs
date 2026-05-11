@@ -1,4 +1,4 @@
-﻿using ReferenceData.Application.Common;
+using ReferenceData.Application.Common;
 using ReferenceData.Application.DTOs;
 using ReferenceData.Application.Interfaces;
 using ReferenceData.Domain;
@@ -25,17 +25,22 @@ namespace ReferenceData.Application.Services
         /// <returns>A paged response containing the list of <see cref="ClaimStatusDto"/>.</returns>
         public async Task<PagedResponse<ClaimStatusDto>> GetAllAsync(bool includeInactive, int page, int pageSize, CancellationToken ct)
         {
+            // includeInactive=false → solo activos (isActive=true)
+            // includeInactive=true  → todos (isActive=null, ignora el query filter global)
             bool? isActiveFilter = includeInactive ? null : true;
 
-            var all = await repo.GetAllAsync(isActiveFilter, ct);
-            var total = all.Count;
-            var items = all.Skip((page - 1) * pageSize)
-                           .Take(pageSize)
-                           .Select(ToDto)
-                           .ToList();
+            var entities = await repo.GetAllAsync(isActiveFilter, ct);
+            var dtos = entities.Select(ToDto).ToList();
 
-            return new PagedResponse<ClaimStatusDto> { Data = items, Page = page, PageSize = pageSize, Total = total };
+            return new PagedResponse<ClaimStatusDto>
+            {
+                Data = dtos.Skip((page - 1) * pageSize).Take(pageSize).ToList(),
+                Page = page,
+                PageSize = pageSize,
+                Total = dtos.Count
+            };
         }
+
 
         /// <summary>
         /// Gets a specific claim status by its ID.

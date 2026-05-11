@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using ReferenceData.Application.Interfaces;
 using ReferenceData.Domain;
 using System;
@@ -18,17 +18,22 @@ namespace ReferenceData.Infrastructure.Persistence.Repositories
         /// <summary>
         /// Retrieves claim statuses from the database with an optional activity filter.
         /// </summary>
-        public async Task<List<ClaimStatus>> GetAllAsync(bool? isActive, CancellationToken ct) =>
-            await db.ClaimStatuses
-                .Where(x => !isActive.HasValue || x.IsActive == isActive)
+        public async Task<List<ClaimStatus>> GetAllAsync(bool? isActive, CancellationToken ct)
+        {
+            var query = isActive.HasValue
+                ? db.ClaimStatuses.Where(x => x.IsActive == isActive.Value)
+                : db.ClaimStatuses.IgnoreQueryFilters();
+
+            return await query
                 .OrderBy(x => x.Code)
                 .ToListAsync(ct);
+        }
 
         /// <summary>
         /// Finds a specific claim status by its primary key.
         /// </summary>
         public async Task<ClaimStatus?> GetByIdAsync(int id, CancellationToken ct) =>
-            await db.ClaimStatuses.FindAsync([id], ct);
+            await db.ClaimStatuses.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == id, ct);
 
         /// <summary>
         /// Retrieves a claim status by its unique business code.

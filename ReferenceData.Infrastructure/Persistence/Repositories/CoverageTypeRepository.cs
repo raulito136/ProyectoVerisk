@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using ReferenceData.Application.Interfaces;
 using ReferenceData.Domain;
 
@@ -12,17 +12,22 @@ namespace ReferenceData.Infrastructure.Persistence.Repositories
         /// <summary>
         /// Fetches coverage types from the DB, ordered by code.
         /// </summary>
-        public async Task<List<CoverageType>> GetAllAsync(bool? isActive, CancellationToken ct) =>
-            await db.CoverageTypes
-                .Where(x => !isActive.HasValue || x.IsActive == isActive)
+        public async Task<List<CoverageType>> GetAllAsync(bool? isActive, CancellationToken ct)
+        {
+            var query = isActive.HasValue
+                ? db.CoverageTypes.Where(x => x.IsActive == isActive.Value)
+                : db.CoverageTypes.IgnoreQueryFilters();
+
+            return await query
                 .OrderBy(x => x.Code)
                 .ToListAsync(ct);
+        }
 
         /// <summary>
         /// Finds a coverage type by ID.
         /// </summary>
         public async Task<CoverageType?> GetByIdAsync(int id, CancellationToken ct) =>
-            await db.CoverageTypes.FindAsync([id], ct);
+            await db.CoverageTypes.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == id, ct);
 
         /// <summary>
         /// Finds a coverage type by its unique code.

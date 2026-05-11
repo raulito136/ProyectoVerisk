@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using ReferenceData.Application.Interfaces;
 using ReferenceData.Domain;
 using System;
@@ -17,17 +17,22 @@ namespace ReferenceData.Infrastructure.Persistence.Repositories
         /// <summary>
         /// Retrieves the list of regions, ordered by code.
         /// </summary>
-        public async Task<List<Region>> GetAllAsync(bool? isActive, CancellationToken ct) =>
-            await db.Regions
-                .Where(x => !isActive.HasValue || x.IsActive == isActive)
+        public async Task<List<Region>> GetAllAsync(bool? isActive, CancellationToken ct)
+        {
+            var query = isActive.HasValue
+                ? db.Regions.Where(x => x.IsActive == isActive.Value)
+                : db.Regions.IgnoreQueryFilters();
+
+            return await query
                 .OrderBy(x => x.Code)
                 .ToListAsync(ct);
+        }
 
         /// <summary>
         /// Finds a region by ID.
         /// </summary>
         public async Task<Region?> GetByIdAsync(int id, CancellationToken ct) =>
-            await db.Regions.FindAsync([id], ct);
+            await db.Regions.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == id, ct);
 
         /// <summary>
         /// Finds a region by its unique code.

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using ReferenceData.Application.Interfaces;
 using ReferenceData.Domain;
 using System;
@@ -17,17 +17,22 @@ namespace ReferenceData.Infrastructure.Persistence.Repositories
         /// <summary>
         /// Gets all policy types from the database.
         /// </summary>
-        public async Task<List<PolicyType>> GetAllAsync(bool? isActive, CancellationToken ct) =>
-            await db.PolicyTypes
-                .Where(x => !isActive.HasValue || x.IsActive == isActive)
+        public async Task<List<PolicyType>> GetAllAsync(bool? isActive, CancellationToken ct)
+        {
+            var query = isActive.HasValue
+                ? db.PolicyTypes.Where(x => x.IsActive == isActive.Value)
+                : db.PolicyTypes.IgnoreQueryFilters();
+
+            return await query
                 .OrderBy(x => x.Code)
                 .ToListAsync(ct);
+        }
 
         /// <summary>
         /// Locates a policy type by its internal ID.
         /// </summary>
         public async Task<PolicyType?> GetByIdAsync(int id, CancellationToken ct) =>
-            await db.PolicyTypes.FindAsync([id], ct);
+            await db.PolicyTypes.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == id, ct);
 
         /// <summary>
         /// Locates a policy type by its business code.
