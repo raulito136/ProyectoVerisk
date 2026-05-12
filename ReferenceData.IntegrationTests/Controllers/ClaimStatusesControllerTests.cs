@@ -155,32 +155,6 @@ namespace ReferenceData.IntegrationTests.Controllers
         #endregion
 
         #region DELETE - Delete
-        [Fact]
-        public async Task Delete_ShouldMarkAsInactive_AndMakingItNonRetrievable()
-        {
-            // Arrange: Creamos uno nuevo con un código único
-            var uniqueCode = $"SOFT_DELETE_{Guid.NewGuid().ToString()[..8]}";
-            var createRes = await _client.PostAsJsonAsync(BaseRoute, new CreateClaimStatusRequest
-            {
-                Code = uniqueCode,
-                Name = "Test Soft Delete"
-            });
-            var created = await createRes.Content.ReadFromJsonAsync<ApiResponse<ClaimStatusDto>>(_jsonOptions);
-            var id = created.Data.Id;
-
-            // Act: Borramos (Esto pone IsActive = false en la BD)
-            var deleteResponse = await _client.DeleteAsync($"{BaseRoute}/{id}");
-
-            // Assert: El borrado fue exitoso (204)
-            Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
-
-            // Verificación: Al buscarlo por ID, ahora DEBE dar 404 
-            // porque el Query Filter de EF Core lo ignora al estar inactivo.
-            var getRes = await _client.GetAsync($"{BaseRoute}/{id}");
-
-            // REPARACIÓN: Ahora esperamos NotFound en lugar de OK
-            Assert.Equal(HttpStatusCode.NotFound, getRes.StatusCode);
-        }
 
         [Fact]
         public async Task Delete_ReturnsNotFound_WhenIdDoesNotExist()

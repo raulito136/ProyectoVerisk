@@ -97,6 +97,15 @@ namespace ReferenceData.Application.Services
             return ServiceResult<bool>.Ok(true);
         }
 
+        public async Task<ServiceResult<bool>> ActivateAsync(int id, CancellationToken ct)
+        {
+            var entity = await repo.GetByIdAsync(id, ct);
+            if (entity is null) return ServiceResult<bool>.Fail("Id", "Not found");
+            entity.IsActive = true;
+            await repo.UpdateAsync(entity, ct);
+            return ServiceResult<bool>.Ok(true);
+        }
+
         private static CoverageTypeDto ToDto(CoverageType e) => new CoverageTypeDto
         {
             Id = e.Id,

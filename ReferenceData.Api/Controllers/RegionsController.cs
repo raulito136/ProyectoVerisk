@@ -76,5 +76,14 @@ namespace ReferenceData.Api.Controllers
                 return NotFound(ApiResponse<bool>.Fail(result.ErrorField!, result.ErrorMessage!));
             return NoContent();
         }
+
+        [HttpPut("{id:int}/activate")]
+        public async Task<IActionResult> Activate(int id, CancellationToken ct)
+        {
+            var result = await service.ActivateAsync(id, ct);
+            if (!result.IsSuccess)
+                return NotFound(ApiResponse<bool>.Fail(result.ErrorField!, result.ErrorMessage!));
+            return NoContent();
+        }
     }
 }

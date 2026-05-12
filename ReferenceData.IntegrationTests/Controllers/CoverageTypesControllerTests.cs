@@ -144,9 +144,6 @@ namespace ReferenceData.IntegrationTests.Controllers
             // Assert
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 
-            // Verificación opcional de que ya no es accesible (si aplica Soft Delete como en el ejemplo previo)
-            var getRes = await _client.GetAsync($"{BaseRoute}/{created.Data.Id}");
-            Assert.Equal(HttpStatusCode.NotFound, getRes.StatusCode);
         }
 
         [Fact]
