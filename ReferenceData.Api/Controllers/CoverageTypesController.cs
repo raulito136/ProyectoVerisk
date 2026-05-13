@@ -89,6 +89,14 @@ namespace ReferenceData.Api.Controllers
             return NoContent();
         }
 
+
+        /// <summary>
+        /// Activates the specified entity by its unique identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier of the entity to activate.</param>
+        /// <param name="ct">A cancellation token that can be used to cancel the operation.</param>
+        /// <returns>A result indicating the outcome of the activation request. Returns a 204 No Content response if the
+        /// activation is successful; otherwise, returns a 404 Not Found response if the entity does not exist.</returns>
         [HttpPut("{id:int}/activate")]
         public async Task<IActionResult> Activate(int id, CancellationToken ct)
         {

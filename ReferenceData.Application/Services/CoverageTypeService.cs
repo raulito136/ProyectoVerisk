@@ -97,6 +97,13 @@ namespace ReferenceData.Application.Services
             return ServiceResult<bool>.Ok(true);
         }
 
+        /// <summary>
+        /// Activates the entity with the specified identifier asynchronously.
+        /// </summary>
+        /// <param name="id">The unique identifier of the entity to activate.</param>
+        /// <param name="ct">A cancellation token that can be used to cancel the asynchronous operation.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains a ServiceResult indicating
+        /// whether the activation was successful. Returns a failed result if the entity is not found.</returns>
         public async Task<ServiceResult<bool>> ActivateAsync(int id, CancellationToken ct)
         {
             var entity = await repo.GetByIdAsync(id, ct);
@@ -106,6 +113,9 @@ namespace ReferenceData.Application.Services
             return ServiceResult<bool>.Ok(true);
         }
 
+        /// <summary>
+        /// Maps a domain entity to its corresponding Data Transfer Object.
+        /// </summary>
         private static CoverageTypeDto ToDto(CoverageType e) => new CoverageTypeDto
         {
             Id = e.Id,
